@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Warehouse Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --bg: #f4f5f7;
+            --bg-card: #ffffff;
+            --text: #222;
+            --text-muted: #666;
+            --border: #d0d0d0;
+            --primary: #007bff;
+            --primary-contrast: #ffffff;
+            --danger: #dc3545;
+            --secondary: #6c757d;
+            --font-size-base: 14px;
+        }
+
+        body.dark {
+            --bg: #121212;
+            --bg-card: #1f1f1f;
+            --text: #f5f5f5;
+            --text-muted: #b0b0b0;
+            --border: #444;
+            --primary: #4e9bff;
+            --primary-contrast: #ffffff;
+            --danger: #ff6b7a;
+            --secondary: #888;
+        }
+
+        body.small-font {
+            --font-size-base: 12px;
+        }
+
+        body.large-font {
+            --font-size-base: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-size: var(--font-size-base);
+        }
+
+        .app {
+            max-width: 1200px;
+            margin: 10px auto 30px;
+            padding: 10px;
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        select, input, button, textarea {
+            font-size: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            border-radius: 4px;
+            border: none;
+            padding: 6px 10px;
+        }
+
+        button.primary {
+            background: var(--primary);
+            color: var(--primary-contrast);
+        }
+
+        button.secondary {
+            background: var(--secondary);
+            color: #fff;
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        button.small {
+            padding: 3px 6px;
+            font-size: 11px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tab-button {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: var(--primary-contrast);
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        label span {
+            display: inline-block;
+            min-width: 110px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+        }
+
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .col {
+            flex: 1 1 260px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        th {
+            background: #e9ecef;
+        }
+
+        body.dark th {
+            background: #2b2b2b;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(0,0,0,0.01);
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .badge-empty {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .tabs {
+            margin-top: 5px;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .rtl label span {
+            min-width: 0;
+        }
+
+        .log-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            padding: 6px;
+            font-size: 12px;
+            background: rgba(0,0,0,0.02);
+        }
+
+        .muted {
+            color: var(--text-muted);
+        }
+
+        .mt-5 { margin-top: 5px; }
+        .mt-10 { margin-top: 10px; }
+
+        @media (max-width: 700px) {
+            label span {
+                min-width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header>
+        <div class="title" data-i18n="title">Warehouse Manager</div>
+        <div class="header-controls">
+            <select id="language-select">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select>
+            <select id="theme-select">
+                <option value="light" data-i18n="theme.light">Light</option>
+                <option value="dark" data-i18n="theme.dark">Dark</option>
+            </select>
+            <select id="font-select">
+                <option value="normal" data-i18n="font.normal">Font: Normal</option>
+                <option value="small" data-i18n="font.small">Font: Small</option>
+                <option value="large" data-i18n="font.large">Font: Large</option>
+            </select>
+            <button id="refresh-btn" class="secondary" data-i18n="btn.refresh">Refresh</button>
+        </div>
+    </header>
+
+    <nav>
+        <button class="tab-button active" data-tab="stock" data-i18n="tab.stock">Stock</button>
+        <button class="tab-button" data-tab="sale" data-i18n="tab.sale">Sales</button>
+        <button class="tab-button" data-tab="refund" data-i18n="tab.refund">Refunds</button>
+        <button class="tab-button" data-tab="reports" data-i18n="tab.reports">Reports / Export</button>
+        <button class="tab-button" data-tab="settings" data-i18n="tab.settings">Settings / Logs</button>
+    </nav>
+
+    <div class="tabs">
+
+        <!-- STOCK TAB -->
+        <section id="tab-stock" class="tab active">
+            <div class="card">
+                <h2 data-i18n="stock.manage">Manage Stock</h2>
+                <div class="row">
+                    <div class="col">
+                        <form id="stock-form">
+                            <input type="hidden" id="stock-id" />
+                            <label>
+                                <span data-i18n="stock.itemName">Item name</span>
+                                <input type="text" id="stock-name" required />
+                            </label>
+                            <label>
+                                <span data-i18n="stock.code">Item code / SKU</span>
+                                <input type="text" id="stock-code" required />
+                            </label>
+                            <label>
+                                <span data-i18n="stock.size">Size</span>
+                                <input type="text" id="stock-size" placeholder="M, 42..." />
+                            </label>
+                            <label>
+                                <span data-i18n="stock.color">Color</span>
+                                <input type="text" id="stock-color" placeholder="Red, Black..." />
+                            </label>
+                            <label>
+                                <span data-i18n="stock.costPrice">Cost price</span>
+                                <input type="number" id="stock-cost" min="0" step="0.01" value="0" />
+                            </label>
+                            <label>
+                                <span data-i18n="stock.sellPrice">Sell price</span>
+                                <input type="number" id="stock-sell" min="0" step="0.01" />
+                                <div class="info-text" data-i18n="stock.sellHint">
+                                    If empty, sell price = cost + margin % (from Settings).
+                                </div>
+                            </label>
+                            <label>
+                                <span data-i18n="stock.qty">Quantity</span>
+                                <input type="number" id="stock-qty" min="0" step="1" value="0" />
+                            </label>
+                            <div class="mt-10">
+                                <button type="submit" class="primary" data-i18n="btn.saveItem">Save item</button>
+                                <button type="button" id="stock-reset" class="secondary" data-i18n="btn.clearForm">Clear form</button>
+                            </div>
+                        </form>
+                        <p class="info-text" data-i18n="stock.info">
+                            Stock item is defined by name + code + size + color together.
+                        </p>
+                    </div>
+                    <div class="col">
+                        <label>
+                            <span data-i18n="stock.search">Search</span>
+                            <input type="text" id="stock-search" placeholder="Name / code / size / color" />
+                        </label>
+
+                        <table>
+                            <thead>
+                            <tr>
+                                <th data-i18n="stock.itemName">Item</th>
+                                <th data-i18n="stock.code">Code</th>
+                                <th data-i18n="stock.size">Size</th>
+                                <th data-i18n="stock.color">Color</th>
+                                <th data-i18n="stock.costPrice">Cost</th>
+                                <th data-i18n="stock.sellPriceShort">Sell</th>
+                                <th data-i18n="stock.qtyShort">Qty</th>
+                                <th data-i18n="stock.actions">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="stock-tbody"></tbody>
+                        </table>
+
+                        <div class="mt-10">
+                            <label>
+                                <span data-i18n="stock.csvImport">Import stock CSV</span>
+                                <input type="file" id="stock-csv-input" accept=".csv" />
+                            </label>
+                            <button id="stock-csv-export" class="secondary mt-5" data-i18n="stock.csvExport">
+                                Export stock CSV
+                            </button>
+                            <p class="info-text" data-i18n="stock.csvHint">
+                                Import will replace current stock with the file content.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="stock.lowTitle">Low stock items</h2>
+                <p class="info-text" data-i18n="stock.lowHint">
+                    Items with quantity below threshold (set in Settings).
+                </p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-i18n="stock.itemName">Item</th>
+                        <th data-i18n="stock.code">Code</th>
+                        <th data-i18n="stock.size">Size</th>
+                        <th data-i18n="stock.color">Color</th>
+                        <th data-i18n="stock.qtyShort">Qty</th>
+                    </tr>
+                    </thead>
+                    <tbody id="low-stock-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SALES TAB -->
+        <section id="tab-sale" class="tab">
+            <div class="card">
+                <h2 data-i18n="sale.new">New sale</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="sale.phone">Phone</span>
+                            <input type="text" id="sale-phone" />
+                        </label>
+                        <label>
+                            <span data-i18n="sale.notes">Notes</span>
+                            <textarea id="sale-notes"></textarea>
+                        </label>
+                        <div class="mt-5">
+                            <button id="sale-add-line" class="secondary" data-i18n="sale.addLine">Add item line</button>
+                            <button id="sale-save" class="primary" data-i18n="sale.save">Save sale</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>
+                            <span data-i18n="sale.search">Search item</span>
+                            <input type="text" id="sale-search" placeholder="Name / code" />
+                        </label>
+                        <label>
+                            <span data-i18n="sale.selectItem">Select item</span>
+                            <select id="sale-item-select"></select>
+                        </label>
+                        <label>
+                            <span data-i18n="sale.selectVariant">Select size / color</span>
+                            <select id="sale-variant-select"></select>
+                        </label>
+                        <label>
+                            <span data-i18n="sale.qty">Quantity</span>
+                            <input type="number" id="sale-qty" min="1" value="1" />
+                        </label>
+                        <label>
+                            <span data-i18n="sale.sellPrice">Sell price (per unit)</span>
+                            <input type="number" id="sale-price" min="0" step="0.01" />
+                            <div class="info-text" data-i18n="sale.sellHint">
+                                Auto-filled from stock, but you can edit.
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-i18n="sale.item">Item</th>
+                            <th data-i18n="sale.size">Size</th>
+                            <th data-i18n="sale.color">Color</th>
+                            <th data-i18n="sale.qtyShort">Qty</th>
+                            <th data-i18n="sale.priceShort">Price</th>
+                            <th data-i18n="sale.totalShort">Total</th>
+                            <th data-i18n="sale.actions">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sale-lines-tbody"></tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="5" class="right" data-i18n="sale.total">Total</td>
+                            <td id="sale-total-cell">0</td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="sale.history">Sales history by day</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="sale.selectDay">Select day</span>
+                            <select id="sale-day-select"></select>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-i18n="sale.time">Time</th>
+                            <th data-i18n="sale.items">Items</th>
+                            <th data-i18n="sale.totalShort">Total</th>
+                            <th data-i18n="sale.profitShort">Profit</th>
+                        </tr>
+                        </thead>
+                        <tbody id="sale-history-tbody"></tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="2" class="right" data-i18n="sale.dayTotal">Day totals</td>
+                            <td id="sale-day-total">0</td>
+                            <td id="sale-day-profit">0</td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- REFUND TAB -->
+        <section id="tab-refund" class="tab">
+            <div class="card">
+                <h2 data-i18n="refund.new">New refund</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="refund.phone">Phone</span>
+                            <input type="text" id="refund-phone" />
+                        </label>
+                        <label>
+                            <span data-i18n="refund.notes">Notes</span>
+                            <textarea id="refund-notes"></textarea>
+                        </label>
+                        <div class="mt-5">
+                            <button id="refund-add-line" class="secondary" data-i18n="refund.addLine">Add item line</button>
+                            <button id="refund-save" class="primary" data-i18n="refund.save">Save refund</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>
+                            <span data-i18n="refund.search">Search item</span>
+                            <input type="text" id="refund-search" placeholder="Name / code" />
+                        </label>
+                        <label>
+                            <span data-i18n="refund.selectItem">Select item</span>
+                            <select id="refund-item-select"></select>
+                        </label>
+                        <label>
+                            <span data-i18n="refund.selectVariant">Select size / color</span>
+                            <select id="refund-variant-select"></select>
+                        </label>
+                        <label>
+                            <span data-i18n="refund.qty">Quantity</span>
+                            <input type="number" id="refund-qty" min="1" value="1" />
+                        </label>
+                        <label>
+                            <span data-i18n="refund.price">Refund price (per unit)</span>
+                            <input type="number" id="refund-price" min="0" step="0.01" />
+                            <div class="info-text" data-i18n="refund.priceHint">
+                                Auto-filled from stock, but you can edit.
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-i18n="refund.item">Item</th>
+                            <th data-i18n="refund.size">Size</th>
+                            <th data-i18n="refund.color">Color</th>
+                            <th data-i18n="refund.qtyShort">Qty</th>
+                            <th data-i18n="refund.priceShort">Price</th>
+                            <th data-i18n="refund.totalShort">Total</th>
+                            <th data-i18n="refund.actions">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="refund-lines-tbody"></tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="5" class="right" data-i18n="refund.total">Total</td>
+                            <td id="refund-total-cell">0</td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="refund.history">Refunds history by day</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="refund.selectDay">Select day</span>
+                            <select id="refund-day-select"></select>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th data-i18n="refund.time">Time</th>
+                            <th data-i18n="refund.items">Items</th>
+                            <th data-i18n="refund.totalShort">Total</th>
+                        </tr>
+                        </thead>
+                        <tbody id="refund-history-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPORTS / EXPORT TAB -->
+        <section id="tab-reports" class="tab">
+            <div class="card">
+                <h2 data-i18n="reports.profitTitle">Profit calculator</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="reports.from">From date</span>
+                            <input type="date" id="profit-from" />
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label>
+                            <span data-i18n="reports.to">To date</span>
+                            <input type="date" id="profit-to" />
+                        </label>
+                    </div>
+                    <div class="col">
+                        <button id="profit-calc" class="primary mt-10" data-i18n="reports.calc">Calculate</button>
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <p>
+                        <span class="muted" data-i18n="reports.salesTotal">Sales total:</span>
+                        <strong id="profit-sales-total">0</strong>
+                    </p>
+                    <p>
+                        <span class="muted" data-i18n="reports.refundsTotal">Refunds total:</span>
+                        <strong id="profit-refunds-total">0</strong>
+                    </p>
+                    <p>
+                        <span class="muted" data-i18n="reports.netProfit">Net profit:</span>
+                        <strong id="profit-net">0</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="reports.exportTitle">Export data</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="reports.exportType">Export</span>
+                            <select id="export-type">
+                                <option value="stock" data-i18n="reports.stock">Stock CSV</option>
+                                <option value="sales" data-i18n="reports.sales">Sales CSV</option>
+                                <option value="refunds" data-i18n="reports.refunds">Refunds CSV</option>
+                                <option value="telegram" data-i18n="reports.telegram">Sales (text for Telegram)</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="col">
+                        <label>
+                            <span data-i18n="reports.day">Day (YYYY-MM-DD)</span>
+                            <input type="date" id="export-day" />
+                        </label>
+                    </div>
+                    <div class="col">
+                        <button id="export-run" class="secondary mt-10" data-i18n="reports.exportBtn">
+                            Run export
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-10">
+                    <textarea id="export-output" placeholder="Text export will appear here for copy/paste"></textarea>
+                    <p class="info-text" data-i18n="reports.exportHint">
+                        For CSV, a file download will start. For Telegram text, copy from the box.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="tab-settings" class="tab">
+            <div class="card">
+                <h2 data-i18n="settings.title">Settings</h2>
+                <div class="row">
+                    <div class="col">
+                        <label>
+                            <span data-i18n="settings.lowThreshold">Low stock threshold</span>
+                            <input type="number" id="settings-low-threshold" min="0" step="1" />
+                        </label>
+                        <label>
+                            <span data-i18n="settings.margin">Default margin % (sell vs cost)</span>
+                            <input type="number" id="settings-margin" min="0" step="1" />
+                        </label>
+                    </div>
+                    <div class="col">
+                        <button id="settings-save" class="primary mt-10" data-i18n="settings.save">
+                            Save settings
+                        </button>
+                        <button id="debug-run" class="secondary mt-10" data-i18n="settings.debug">
+                            Run debug check
+                        </button>
+                        <p class="info-text mt-5" data-i18n="settings.debugHint">
+                            Debug checks for negative quantities or missing prices.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 data-i18n="settings.logs">Activity log</h2>
+                <div class="log-list" id="log-list"></div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+/* ================== DATA & STORAGE ================== */
+const STORAGE = {
+    stock: "wm_stock_v1",
+    transactions: "wm_transactions_v1",
+    settings: "wm_settings_v1",
+    logs: "wm_logs_v1"
+};
+
+let stock = [];
+let transactions = [];
+let settings = {
+    language: "en",
+    theme: "light",
+    fontSize: "normal",
+    lowStockThreshold: 5,
+    defaultMarginPercent: 20
+};
+let logs = [];
+let saleLines = [];
+let refundLines = [];
+
+/* ---------- helpers ---------- */
+function generateId(prefix) {
+    return prefix + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function dateOnly(iso) {
+    return iso ? iso.substring(0, 10) : "";
+}
+function timeOnly(iso) {
+    return iso ? iso.substring(11, 19) : "";
+}
+
+/* ---------- storage ---------- */
+function loadFromStorage() {
+    try {
+        const s = localStorage.getItem(STORAGE.stock);
+        const t = localStorage.getItem(STORAGE.transactions);
+        const set = localStorage.getItem(STORAGE.settings);
+        const lg = localStorage.getItem(STORAGE.logs);
+        stock = s ? JSON.parse(s) : [];
+        transactions = t ? JSON.parse(t) : [];
+        settings = set ? Object.assign(settings, JSON.parse(set)) : settings;
+        logs = lg ? JSON.parse(lg) : [];
+    } catch (e) {
+        console.error("Load error", e);
+        stock = [];
+        transactions = [];
+        logs = [];
+    }
+}
+function saveStock() {
+    localStorage.setItem(STORAGE.stock, JSON.stringify(stock));
+}
+function saveTransactions() {
+    localStorage.setItem(STORAGE.transactions, JSON.stringify(transactions));
+}
+function saveSettings() {
+    localStorage.setItem(STORAGE.settings, JSON.stringify(settings));
+}
+function saveLogs() {
+    localStorage.setItem(STORAGE.logs, JSON.stringify(logs));
+}
+function addLog(msg) {
+    const ts = new Date().toISOString();
+    logs.unshift(ts + " - " + msg);
+    if (logs.length > 300) logs.pop();
+    saveLogs();
+    renderLogs();
+}
+
+/* ================== I18N ================== */
+const I18N = {
+    en: {
+        title: "Warehouse Manager",
+        "theme.light": "Light",
+        "theme.dark": "Dark",
+        "font.normal": "Font: Normal",
+        "font.small": "Font: Small",
+        "font.large": "Font: Large",
+        "tab.stock": "Stock",
+        "tab.sale": "Sales",
+        "tab.refund": "Refunds",
+        "tab.reports": "Reports / Export",
+        "tab.settings": "Settings / Logs",
+        "btn.refresh": "Refresh",
+        "btn.saveItem": "Save item",
+        "btn.clearForm": "Clear form",
+        "stock.manage": "Manage Stock",
+        "stock.itemName": "Item name",
+        "stock.code": "Item code / SKU",
+        "stock.size": "Size",
+        "stock.color": "Color",
+        "stock.costPrice": "Cost price",
+        "stock.sellPrice": "Sell price",
+        "stock.sellPriceShort": "Sell",
+        "stock.qty": "Quantity",
+        "stock.qtyShort": "Qty",
+        "stock.actions": "Actions",
+        "stock.search": "Search",
+        "stock.info": "Stock item is defined by name + code + size + color together.",
+        "stock.sellHint": "If empty, sell price = cost + margin % (from Settings).",
+        "stock.csvImport": "Import stock CSV",
+        "stock.csvExport": "Export stock CSV",
+        "stock.csvHint": "Import will replace current stock with the file content.",
+        "stock.lowTitle": "Low stock items",
+        "stock.lowHint": "Items with quantity below threshold (set in Settings).",
+        "sale.new": "New sale",
+        "sale.phone": "Phone",
+        "sale.notes": "Notes",
+        "sale.addLine": "Add item line",
+        "sale.save": "Save sale",
+        "sale.search": "Search item",
+        "sale.selectItem": "Select item",
+        "sale.selectVariant": "Select size / color",
+        "sale.qty": "Quantity",
+        "sale.qtyShort": "Qty",
+        "sale.sellPrice": "Sell price (per unit)",
+        "sale.sellHint": "Auto-filled from stock, but you can edit.",
+        "sale.item": "Item",
+        "sale.size": "Size",
+        "sale.color": "Color",
+        "sale.priceShort": "Price",
+        "sale.totalShort": "Total",
+        "sale.actions": "Actions",
+        "sale.total": "Total",
+        "sale.history": "Sales history by day",
+        "sale.selectDay": "Select day",
+        "sale.time": "Time",
+        "sale.items": "Items",
+        "sale.profitShort": "Profit",
+        "sale.dayTotal": "Day totals",
+        "refund.new": "New refund",
+        "refund.phone": "Phone",
+        "refund.notes": "Notes",
+        "refund.addLine": "Add item line",
+        "refund.save": "Save refund",
+        "refund.search": "Search item",
+        "refund.selectItem": "Select item",
+        "refund.selectVariant": "Select size / color",
+        "refund.qty": "Quantity",
+        "refund.qtyShort": "Qty",
+        "refund.price": "Refund price (per unit)",
+        "refund.priceShort": "Price",
+        "refund.priceHint": "Auto-filled from stock, but you can edit.",
+        "refund.item": "Item",
+        "refund.size": "Size",
+        "refund.color": "Color",
+        "refund.totalShort": "Total",
+        "refund.actions": "Actions",
+        "refund.total": "Total",
+        "refund.history": "Refunds history by day",
+        "refund.selectDay": "Select day",
+        "refund.time": "Time",
+        "refund.items": "Items",
+        "reports.profitTitle": "Profit calculator",
+        "reports.from": "From date",
+        "reports.to": "To date",
+        "reports.calc": "Calculate",
+        "reports.salesTotal": "Sales total:",
+        "reports.refundsTotal": "Refunds total:",
+        "reports.netProfit": "Net profit:",
+        "reports.exportTitle": "Export data",
+        "reports.exportType": "Export",
+        "reports.stock": "Stock CSV",
+        "reports.sales": "Sales CSV",
+        "reports.refunds": "Refunds CSV",
+        "reports.telegram": "Sales (text for Telegram)",
+        "reports.day": "Day (YYYY-MM-DD)",
+        "reports.exportBtn": "Run export",
+        "reports.exportHint": "For CSV, a file download will start. For Telegram text, copy from the box.",
+        "settings.title": "Settings",
+        "settings.lowThreshold": "Low stock threshold",
+        "settings.margin": "Default margin % (sell vs cost)",
+        "settings.save": "Save settings",
+        "settings.debug": "Run debug check",
+        "settings.debugHint": "Debug checks for negative quantities or missing prices.",
+        "settings.logs": "Activity log"
+    },
+    ar: {
+        title: "مدير مخزون المستودع",
+        "theme.light": "ساطع",
+        "theme.dark": "داكن",
+        "font.normal": "الخط: عادي",
+        "font.small": "الخط: صغير",
+        "font.large": "الخط: كبير",
+        "tab.stock": "المخزون",
+        "tab.sale": "المبيعات",
+        "tab.refund": "الإرجاعات",
+        "tab.reports": "التقارير / التصدير",
+        "tab.settings": "الإعدادات / السجل",
+        "btn.refresh": "تحديث",
+        "btn.saveItem": "حفظ الصنف",
+        "btn.clearForm": "مسح النموذج",
+        "stock.manage": "إدارة المخزون",
+        "stock.itemName": "اسم الصنف",
+        "stock.code": "الكود / SKU",
+        "stock.size": "المقاس",
+        "stock.color": "اللون",
+        "stock.costPrice": "سعر الكلفة",
+        "stock.sellPrice": "سعر البيع",
+        "stock.sellPriceShort": "بيع",
+        "stock.qty": "الكمية",
+        "stock.qtyShort": "كمية",
+        "stock.actions": "إجراءات",
+        "stock.search": "بحث",
+        "stock.info": "الصنف يُعرَّف بالاسم + الكود + المقاس + اللون معاً.",
+        "stock.sellHint": "إذا تركته فارغاً سيكون سعر البيع = الكلفة + نسبة الربح من الإعدادات.",
+        "stock.csvImport": "استيراد المخزون (CSV)",
+        "stock.csvExport": "تصدير المخزون (CSV)",
+        "stock.csvHint": "الاستيراد يستبدل المخزون الحالي بما في الملف.",
+        "stock.lowTitle": "الأصناف قليلة المخزون",
+        "stock.lowHint": "الأصناف التي كميتها أقل من الحد المحدد في الإعدادات.",
+        "sale.new": "عملية بيع جديدة",
+        "sale.phone": "رقم الهاتف",
+        "sale.notes": "ملاحظات",
+        "sale.addLine": "إضافة صنف",
+        "sale.save": "حفظ عملية البيع",
+        "sale.search": "بحث عن صنف",
+        "sale.selectItem": "اختر الصنف",
+        "sale.selectVariant": "اختر المقاس / اللون",
+        "sale.qty": "الكمية",
+        "sale.qtyShort": "كمية",
+        "sale.sellPrice": "سعر البيع للوحدة",
+        "sale.sellHint": "يُملأ تلقائياً من المخزون ويمكن تعديله.",
+        "sale.item": "الصنف",
+        "sale.size": "المقاس",
+        "sale.color": "اللون",
+        "sale.priceShort": "السعر",
+        "sale.totalShort": "الإجمالي",
+        "sale.actions": "إجراءات",
+        "sale.total": "الإجمالي",
+        "sale.history": "سجل المبيعات حسب اليوم",
+        "sale.selectDay": "اختر اليوم",
+        "sale.time": "الوقت",
+        "sale.items": "الأصناف",
+        "sale.profitShort": "الربح",
+        "sale.dayTotal": "مجاميع اليوم",
+        "refund.new": "عملية إرجاع جديدة",
+        "refund.phone": "رقم الهاتف",
+        "refund.notes": "ملاحظات",
+        "refund.addLine": "إضافة صنف",
+        "refund.save": "حفظ عملية الإرجاع",
+        "refund.search": "بحث عن صنف",
+        "refund.selectItem": "اختر الصنف",
+        "refund.selectVariant": "اختر المقاس / اللون",
+        "refund.qty": "الكمية",
+        "refund.qtyShort": "كمية",
+        "refund.price": "سعر الإرجاع للوحدة",
+        "refund.priceShort": "السعر",
+        "refund.priceHint": "يُملأ تلقائياً من المخزون ويمكن تعديله.",
+        "refund.item": "الصنف",
+        "refund.size": "المقاس",
+        "refund.color": "اللون",
+        "refund.totalShort": "الإجمالي",
+        "refund.actions": "إجراءات",
+        "refund.total": "الإجمالي",
+        "refund.history": "سجل الإرجاعات حسب اليوم",
+        "refund.selectDay": "اختر اليوم",
+        "refund.time": "الوقت",
+        "refund.items": "الأصناف",
+        "reports.profitTitle": "حاسبة الأرباح",
+        "reports.from": "من تاريخ",
+        "reports.to": "إلى تاريخ",
+        "reports.calc": "احسب",
+        "reports.salesTotal": "مجموع المبيعات:",
+        "reports.refundsTotal": "مجموع الإرجاعات:",
+        "reports.netProfit": "صافي الربح:",
+        "reports.exportTitle": "تصدير البيانات",
+        "reports.exportType": "تصدير",
+        "reports.stock": "المخزون (CSV)",
+        "reports.sales": "المبيعات (CSV)",
+        "reports.refunds": "الإرجاعات (CSV)",
+        "reports.telegram": "المبيعات (نص لتليغرام)",
+        "reports.day": "اليوم (YYYY-MM-DD)",
+        "reports.exportBtn": "بدء التصدير",
+        "reports.exportHint": "في CSV سيتم تنزيل ملف، وفي نص تليغرام يمكن نسخ النص من المربع.",
+        "settings.title": "الإعدادات",
+        "settings.lowThreshold": "حد المخزون القليل",
+        "settings.margin": "نسبة الربح الافتراضية %",
+        "settings.save": "حفظ الإعدادات",
+        "settings.debug": "تشغيل فحص الأخطاء",
+        "settings.debugHint": "يفحص عن الكميات السالبة أو الأسعار المفقودة.",
+        "settings.logs": "سجل النشاطات"
+    }
+};
+
+function t(key) {
+    const lang = settings.language || "en";
+    if (I18N[lang] && I18N[lang][key]) return I18N[lang][key];
+    if (I18N.en[key]) return I18N.en[key];
+    return key;
+}
+
+function applyLanguage() {
+    const lang = settings.language || "en";
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+    if (lang === "ar") {
+        document.body.classList.add("rtl");
+    } else {
+        document.body.classList.remove("rtl");
+    }
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = t(key);
+    });
+
+    const langSelect = document.getElementById("language-select");
+    if (langSelect) langSelect.value = lang;
+}
+
+function applyThemeAndFont() {
+    document.body.classList.remove("dark", "small-font", "large-font");
+    if (settings.theme === "dark") document.body.classList.add("dark");
+    if (settings.fontSize === "small") document.body.classList.add("small-font");
+    if (settings.fontSize === "large") document.body.classList.add("large-font");
+
+    const themeSelect = document.getElementById("theme-select");
+    const fontSelect = document.getElementById("font-select");
+    if (themeSelect) themeSelect.value = settings.theme;
+    if (fontSelect) fontSelect.value = settings.fontSize;
+}
+
+/* ================== TABS ================== */
+function switchTab(tabName) {
+    document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+    });
+    document.querySelectorAll(".tab").forEach(sec => {
+        sec.classList.toggle("active", sec.id === "tab-" + tabName);
+    });
+}
+
+/* ================== STOCK ================== */
+function resetStockForm() {
+    const form = document.getElementById("stock-form");
+    if (form) form.reset();
+    document.getElementById("stock-id").value = "";
+    document.getElementById("stock-cost").value = 0;
+    document.getElementById("stock-qty").value = 0;
+}
+
+function loadStockIntoForm(id) {
+    const it = stock.find(s => s.id === id);
+    if (!it) return;
+    document.getElementById("stock-id").value = it.id;
+    document.getElementById("stock-name").value = it.name;
+    document.getElementById("stock-code").value = it.code;
+    document.getElementById("stock-size").value = it.size || "";
+    document.getElementById("stock-color").value = it.color || "";
+    document.getElementById("stock-cost").value = it.costPrice.toString();
+    document.getElementById("stock-sell").value = it.sellPrice.toString();
+    document.getElementById("stock-qty").value = it.quantity.toString();
+}
+
+function renderStockTable() {
+    const tbody = document.getElementById("stock-tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    const q = (document.getElementById("stock-search").value || "").trim().toLowerCase();
+
+    const filtered = stock.filter(it => {
+        if (!q) return true;
+        return (
+            it.name.toLowerCase().includes(q) ||
+            it.code.toLowerCase().includes(q) ||
+            (it.size || "").toLowerCase().includes(q) ||
+            (it.color || "").toLowerCase().includes(q)
+        );
+    });
+
+    if (filtered.length === 0) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 8;
+        td.textContent = "No items.";
+        td.className = "right";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+    }
+
+    filtered.forEach(it => {
+        const tr = document.createElement("tr");
+        const cost = typeof it.costPrice === "number" ? it.costPrice : 0;
+        const sell = typeof it.sellPrice === "number" ? it.sellPrice : 0;
+        const qty = typeof it.quantity === "number" ? it.quantity : 0;
+
+        tr.innerHTML = `
+            <td>${it.name}</td>
+            <td>${it.code}</td>
+            <td>${it.size || "-"}</td>
+            <td>${it.color || "-"}</td>
+            <td>${cost.toFixed(2)}</td>
+            <td>${sell.toFixed(2)}</td>
+            <td>${qty <= 0 ? '<span class="badge-empty">0</span>' : qty}</td>
+            <td></td>
+        `;
+        const actionsTd = tr.lastElementChild;
+
+        const plusBtn = document.createElement("button");
+        plusBtn.textContent = "+";
+        plusBtn.className = "small secondary";
+        plusBtn.onclick = () => {
+            const deltaStr = prompt("Add quantity:", "1");
+            const delta = parseInt(deltaStr || "0", 10);
+            if (!isNaN(delta) && delta > 0) {
+                it.quantity += delta;
+                saveStock();
+                addLog("Increase qty of " + it.code + " by " + delta);
+                renderStockTable();
+                renderLowStock();
+            }
+        };
+
+        const minusBtn = document.createElement("button");
+        minusBtn.textContent = "-";
+        minusBtn.className = "small secondary";
+        minusBtn.onclick = () => {
+            const deltaStr = prompt("Remove quantity:", "1");
+            const delta = parseInt(deltaStr || "0", 10);
+            if (!isNaN(delta) && delta > 0) {
+                it.quantity = Math.max(0, it.quantity - delta);
+                saveStock();
+                addLog("Decrease qty of " + it.code + " by " + delta);
+                renderStockTable();
+                renderLowStock();
+            }
+        };
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.className = "small secondary";
+        editBtn.onclick = () => loadStockIntoForm(it.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "X";
+        delBtn.className = "small danger";
+        delBtn.onclick = () => {
+            if (confirm("Delete this item?")) {
+                stock = stock.filter(s => s.id !== it.id);
+                saveStock();
+                addLog("Deleted item " + it.code);
+                renderStockTable();
+                renderLowStock();
+                refreshStockSelects();
+            }
+        };
+
+        actionsTd.appendChild(plusBtn);
+        actionsTd.appendChild(minusBtn);
+        actionsTd.appendChild(editBtn);
+        actionsTd.appendChild(delBtn);
+
+        tbody.appendChild(tr);
+    });
+}
+
+function renderLowStock() {
+    const tbody = document.getElementById("low-stock-tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    const threshold = settings.lowStockThreshold || 0;
+    const low = stock.filter(it => (it.quantity || 0) < threshold);
+
+    if (!low.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.textContent = "No low stock items.";
+        td.className = "right";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+    }
+
+    low.forEach(it => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${it.name}</td>
+            <td>${it.code}</td>
+            <td>${it.size || "-"}</td>
+            <td>${it.color || "-"}</td>
+            <td>${it.quantity}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function handleStockSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById("stock-id").value;
+    const name = (document.getElementById("stock-name").value || "").trim();
+    const code = (document.getElementById("stock-code").value || "").trim();
+    const size = (document.getElementById("stock-size").value || "").trim();
+    const color = (document.getElementById("stock-color").value || "").trim();
+    const costVal = document.getElementById("stock-cost").value;
+    const sellVal = document.getElementById("stock-sell").value;
+    const qtyVal = document.getElementById("stock-qty").value;
+
+    if (!name || !code) {
+        alert("Item name and code are required.");
+        return;
+    }
+
+    let cost = parseFloat(costVal || "0");
+    if (isNaN(cost) || cost < 0) cost = 0;
+
+    let sell = parseFloat(sellVal);
+    if (isNaN(sell) || sell < 0) {
+        const margin = settings.defaultMarginPercent || 0;
+        sell = cost * (1 + margin / 100);
+    }
+
+    let qty = parseInt(qtyVal || "0", 10);
+    if (isNaN(qty) || qty < 0) qty = 0;
+
+    if (id) {
+        const it = stock.find(s => s.id === id);
+        if (it) {
+            it.name = name;
+            it.code = code;
+            it.size = size;
+            it.color = color;
+            it.costPrice = cost;
+            it.sellPrice = sell;
+            it.quantity = qty;
+            addLog("Updated item " + code);
+        }
+    } else {
+        const newItem = {
+            id: generateId("stk"),
+            name,
+            code,
+            size,
+            color,
+            costPrice: cost,
+            sellPrice: sell,
+            quantity: qty
+        };
+        stock.push(newItem);
+        addLog("Added item " + code);
+    }
+
+    saveStock();
+    renderStockTable();
+    renderLowStock();
+    refreshStockSelects();
+    resetStockForm();
+}
+
+/* ---------- CSV stock ---------- */
+function downloadTextFile(text, filename) {
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportStockCsv() {
+    if (!stock.length) {
+        alert("No stock to export.");
+        return;
+    }
+    const rows = [["id","name","code","size","color","costPrice","sellPrice","quantity"]];
+    stock.forEach(it => {
+        rows.push([
+            it.id,
+            it.name,
+            it.code,
+            it.size || "",
+            it.color || "",
+            it.costPrice,
+            it.sellPrice,
+            it.quantity
+        ]);
+    });
+    const csv = rows.map(r => r.join(",")).join("\n");
+    downloadTextFile(csv, "stock.csv");
+}
+
+function importStockCsv(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const text = evt.target.result;
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length);
+        if (!lines.length) return;
+        const header = lines[0].split(",");
+        const nameIdx = header.indexOf("name");
+        const codeIdx = header.indexOf("code");
+        const sizeIdx = header.indexOf("size");
+        const colorIdx = header.indexOf("color");
+        const costIdx = header.indexOf("costPrice");
+        const sellIdx = header.indexOf("sellPrice");
+        const qtyIdx = header.indexOf("quantity");
+        if (nameIdx === -1 || codeIdx === -1) {
+            alert("CSV must have at least 'name' and 'code' columns.");
+            return;
+        }
+
+        const newStock = [];
+        for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(",");
+            if (!parts.length) continue;
+            const name = (parts[nameIdx] || "").trim();
+            const code = (parts[codeIdx] || "").trim();
+            if (!name || !code) continue;
+            const size = (parts[sizeIdx] || "").trim();
+            const color = (parts[colorIdx] || "").trim();
+            const cost = parseFloat(parts[costIdx] || "0");
+            const sell = parseFloat(parts[sellIdx] || "0");
+            const qty = parseInt(parts[qtyIdx] || "0", 10);
+            newStock.push({
+                id: generateId("stk"),
+                name,
+                code,
+                size,
+                color,
+                costPrice: isNaN(cost) ? 0 : cost,
+                sellPrice: isNaN(sell) ? 0 : sell,
+                quantity: isNaN(qty) ? 0 : qty
+            });
+        }
+        stock = newStock;
+        saveStock();
+        addLog("Imported stock from CSV (replaced all items).");
+        renderStockTable();
+        renderLowStock();
+        refreshStockSelects();
+    };
+    reader.readAsText(file);
+}
+
+/* ================== SALES & REFUNDS ================== */
+function findStockById(id) {
+    return stock.find(s => s.id === id);
+}
+
+/* group stock into items with variants (size/color) */
+function groupStockByItem() {
+    const map = new Map();
+    stock.forEach(it => {
+        const key = `${it.code}||${it.name}`;
+        if (!map.has(key)) {
+            map.set(key, { code: it.code, name: it.name, variants: [] });
+        }
+        map.get(key).variants.push(it);
+    });
+    return Array.from(map.values());
+}
+
+function getVariantsByCode(code) {
+    return stock.filter(it => it.code === code);
+}
+
+/* --- item + variant selects --- */
+function refreshStockSelects() {
+    const saleItemSel = document.getElementById("sale-item-select");
+    const refundItemSel = document.getElementById("refund-item-select");
+    const saleVarSel = document.getElementById("sale-variant-select");
+    const refundVarSel = document.getElementById("refund-variant-select");
+
+    const grouped = groupStockByItem();
+
+    function fillItemSelect(sel) {
+        if (!sel) return;
+        sel.innerHTML = "";
+        const optEmpty = document.createElement("option");
+        optEmpty.value = "";
+        optEmpty.textContent = "--";
+        sel.appendChild(optEmpty);
+        grouped.forEach(g => {
+            const opt = document.createElement("option");
+            opt.value = g.code; // use code as item key
+            opt.textContent = `${g.code} | ${g.name}`;
+            sel.appendChild(opt);
+        });
+    }
+
+    fillItemSelect(saleItemSel);
+    fillItemSelect(refundItemSel);
+
+    if (saleVarSel) saleVarSel.innerHTML = "";
+    if (refundVarSel) refundVarSel.innerHTML = "";
+}
+
+function populateVariantSelect(selectElement, code) {
+    if (!selectElement) return;
+    selectElement.innerHTML = "";
+    if (!code) return;
+    const variants = getVariantsByCode(code);
+    const optEmpty = document.createElement("option");
+    optEmpty.value = "";
+    optEmpty.textContent = "--";
+    selectElement.appendChild(optEmpty);
+    variants.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v.id; // variant id = stock id
+        opt.textContent = `${v.size || "-"} | ${v.color || "-"} | Qty:${v.quantity}`;
+        selectElement.appendChild(opt);
+    });
+}
+
+/* --- sale lines --- */
+function renderSaleLines() {
+    const tbody = document.getElementById("sale-lines-tbody");
+    const totalCell = document.getElementById("sale-total-cell");
+    if (!tbody || !totalCell) return;
+    tbody.innerHTML = "";
+    let total = 0;
+    saleLines.forEach((ln, idx) => {
+        total += ln.total;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${ln.name} (${ln.code})</td>
+            <td>${ln.size || "-"}</td>
+            <td>${ln.color || "-"}</td>
+            <td>${ln.qty}</td>
+            <td>${ln.price.toFixed(2)}</td>
+            <td>${ln.total.toFixed(2)}</td>
+            <td></td>
+        `;
+        const td = tr.lastElementChild;
+        const del = document.createElement("button");
+        del.textContent = "X";
+        del.className = "small danger";
+        del.onclick = () => {
+            saleLines.splice(idx, 1);
+            renderSaleLines();
+        };
+        td.appendChild(del);
+        tbody.appendChild(tr);
+    });
+    totalCell.textContent = total.toFixed(2);
+}
+
+function addSaleLine() {
+    const variantId = document.getElementById("sale-variant-select").value;
+    const qtyVal = document.getElementById("sale-qty").value;
+    const priceVal = document.getElementById("sale-price").value;
+    const item = findStockById(variantId);
+    if (!item) {
+        alert("Select size/color variant.");
+        return;
+    }
+    let qty = parseInt(qtyVal || "0", 10);
+    if (isNaN(qty) || qty <= 0) {
+        alert("Quantity must be > 0.");
+        return;
+    }
+    if (qty > item.quantity) {
+        alert("Quantity exceeds current stock.");
+        return;
+    }
+    let price = parseFloat(priceVal);
+    if (isNaN(price) || price < 0) price = item.sellPrice;
+    const total = price * qty;
+    const profit = (price - item.costPrice) * qty;
+
+    saleLines.push({
+        stockId: item.id,
+        name: item.name,
+        code: item.code,
+        size: item.size,
+        color: item.color,
+        qty,
+        price,
+        total,
+        profit
+    });
+
+    addLog("Add sale line " + item.code + " x" + qty);
+    renderSaleLines();
+}
+
+function saveSale() {
+    if (!saleLines.length) {
+        alert("Add at least one item.");
+        return;
+    }
+    const phone = (document.getElementById("sale-phone").value || "").trim();
+    const notes = (document.getElementById("sale-notes").value || "").trim();
+    const now = new Date();
+    let total = 0;
+    let profit = 0;
+    saleLines.forEach(l => {
+        total += l.total;
+        profit += l.profit;
+    });
+    const tx = {
+        id: generateId("sale"),
+        type: "sale",
+        datetime: now.toISOString(),
+        phone,
+        notes,
+        lines: saleLines.map(l => Object.assign({}, l)),
+        total,
+        profit
+    };
+    // decrease stock
+    saleLines.forEach(l => {
+        const it = findStockById(l.stockId);
+        if (it) {
+            it.quantity = Math.max(0, it.quantity - l.qty);
+        }
+    });
+    transactions.push(tx);
+    saveStock();
+    saveTransactions();
+    addLog("Saved sale " + tx.id + " total=" + total.toFixed(2));
+
+    saleLines = [];
+    renderSaleLines();
+    renderStockTable();
+    renderLowStock();
+    refreshStockSelects();
+    document.getElementById("sale-phone").value = "";
+    document.getElementById("sale-notes").value = "";
+    refreshDaySelectors();
+}
+
+/* --- refund lines --- */
+function renderRefundLines() {
+    const tbody = document.getElementById("refund-lines-tbody");
+    const totalCell = document.getElementById("refund-total-cell");
+    if (!tbody || !totalCell) return;
+    tbody.innerHTML = "";
+    let total = 0;
+    refundLines.forEach((ln, idx) => {
+        total += ln.total;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${ln.name} (${ln.code})</td>
+            <td>${ln.size || "-"}</td>
+            <td>${ln.color || "-"}</td>
+            <td>${ln.qty}</td>
+            <td>${ln.price.toFixed(2)}</td>
+            <td>${ln.total.toFixed(2)}</td>
+            <td></td>
+        `;
+        const td = tr.lastElementChild;
+        const del = document.createElement("button");
+        del.textContent = "X";
+        del.className = "small danger";
+        del.onclick = () => {
+            refundLines.splice(idx, 1);
+            renderRefundLines();
+        };
+        td.appendChild(del);
+        tbody.appendChild(tr);
+    });
+    totalCell.textContent = total.toFixed(2);
+}
+
+function addRefundLine() {
+    const variantId = document.getElementById("refund-variant-select").value;
+    const qtyVal = document.getElementById("refund-qty").value;
+    const priceVal = document.getElementById("refund-price").value;
+    const item = findStockById(variantId);
+    if (!item) {
+        alert("Select size/color variant.");
+        return;
+    }
+    let qty = parseInt(qtyVal || "0", 10);
+    if (isNaN(qty) || qty <= 0) {
+        alert("Quantity must be > 0.");
+        return;
+    }
+    let price = parseFloat(priceVal);
+    if (isNaN(price) || price < 0) price = item.sellPrice;
+    const total = price * qty;
+    const profit = (price - item.costPrice) * qty * -1; // negative
+
+    refundLines.push({
+        stockId: item.id,
+        name: item.name,
+        code: item.code,
+        size: item.size,
+        color: item.color,
+        qty,
+        price,
+        total,
+        profit
+    });
+
+    addLog("Add refund line " + item.code + " x" + qty);
+    renderRefundLines();
+}
+
+function saveRefund() {
+    if (!refundLines.length) {
+        alert("Add at least one item.");
+        return;
+    }
+    const phone = (document.getElementById("refund-phone").value || "").trim();
+    const notes = (document.getElementById("refund-notes").value || "").trim();
+    const now = new Date();
+    let total = 0;
+    let profit = 0;
+    refundLines.forEach(l => {
+        total += l.total;
+        profit += l.profit;
+    });
+    const tx = {
+        id: generateId("refund"),
+        type: "refund",
+        datetime: now.toISOString(),
+        phone,
+        notes,
+        lines: refundLines.map(l => Object.assign({}, l)),
+        total,
+        profit
+    };
+    // increase stock
+    refundLines.forEach(l => {
+        const it = findStockById(l.stockId);
+        if (it) {
+            it.quantity += l.qty;
+        }
+    });
+    transactions.push(tx);
+    saveStock();
+    saveTransactions();
+    addLog("Saved refund " + tx.id + " total=" + total.toFixed(2));
+
+    refundLines = [];
+    renderRefundLines();
+    renderStockTable();
+    renderLowStock();
+    refreshStockSelects();
+    document.getElementById("refund-phone").value = "";
+    document.getElementById("refund-notes").value = "";
+    refreshDaySelectors();
+}
+
+/* --- history by day --- */
+function getDaysForType(type) {
+    const s = new Set();
+    transactions.forEach(tx => {
+        if (tx.type === type) s.add(dateOnly(tx.datetime));
+    });
+    return Array.from(s).sort();
+}
+
+function refreshDaySelectors() {
+    const saleSelect = document.getElementById("sale-day-select");
+    const refundSelect = document.getElementById("refund-day-select");
+    function fill(sel, days) {
+        if (!sel) return;
+        sel.innerHTML = "";
+        const optEmpty = document.createElement("option");
+        optEmpty.value = "";
+        optEmpty.textContent = "--";
+        sel.appendChild(optEmpty);
+        days.forEach(d => {
+            const opt = document.createElement("option");
+            opt.value = d;
+            opt.textContent = d;
+            sel.appendChild(opt);
+        });
+    }
+    fill(saleSelect, getDaysForType("sale"));
+    fill(refundSelect, getDaysForType("refund"));
+}
+
+function renderSaleHistoryForDay(day) {
+    const tbody = document.getElementById("sale-history-tbody");
+    const totCell = document.getElementById("sale-day-total");
+    const profCell = document.getElementById("sale-day-profit");
+    if (!tbody || !totCell || !profCell) return;
+    tbody.innerHTML = "";
+    let dayTotal = 0;
+    let dayProfit = 0;
+    const list = transactions.filter(tx => tx.type === "sale" && dateOnly(tx.datetime) === day);
+    list.forEach(tx => {
+        dayTotal += tx.total;
+        dayProfit += tx.profit;
+        const itemsShort = tx.lines.map(l => `${l.code} x${l.qty}`).join(", ");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${timeOnly(tx.datetime)}</td>
+            <td>${itemsShort}</td>
+            <td>${tx.total.toFixed(2)}</td>
+            <td>${tx.profit.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    if (!list.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 4;
+        td.textContent = "No sales.";
+        td.className = "right";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
+    totCell.textContent = dayTotal.toFixed(2);
+    profCell.textContent = dayProfit.toFixed(2);
+}
+
+function renderRefundHistoryForDay(day) {
+    const tbody = document.getElementById("refund-history-tbody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    const list = transactions.filter(tx => tx.type === "refund" && dateOnly(tx.datetime) === day);
+    list.forEach(tx => {
+        const itemsShort = tx.lines.map(l => `${l.code} x${l.qty}`).join(", ");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${timeOnly(tx.datetime)}</td>
+            <td>${itemsShort}</td>
+            <td>${tx.total.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    if (!list.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 3;
+        td.textContent = "No refunds.";
+        td.className = "right";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
+}
+
+/* ================== REPORTS / EXPORT ================== */
+function calculateProfitRange() {
+    const from = document.getElementById("profit-from").value;
+    const to = document.getElementById("profit-to").value;
+    if (!from || !to) {
+        alert("Select from and to dates.");
+        return;
+    }
+    const fromTime = new Date(from + "T00:00:00");
+    const toTime = new Date(to + "T23:59:59");
+    let salesTotal = 0;
+    let refundsTotal = 0;
+    let netProfit = 0;
+    transactions.forEach(tx => {
+        const dt = new Date(tx.datetime);
+        if (dt >= fromTime && dt <= toTime) {
+            if (tx.type === "sale") {
+                salesTotal += tx.total;
+            } else if (tx.type === "refund") {
+                refundsTotal += tx.total;
+            }
+            netProfit += tx.profit;
+        }
+    });
+    document.getElementById("profit-sales-total").textContent = salesTotal.toFixed(2);
+    document.getElementById("profit-refunds-total").textContent = refundsTotal.toFixed(2);
+    document.getElementById("profit-net").textContent = netProfit.toFixed(2);
+}
+
+function exportData() {
+    const type = document.getElementById("export-type").value;
+    const day = document.getElementById("export-day").value;
+    const out = document.getElementById("export-output");
+    out.value = "";
+
+    if (type === "stock") {
+        exportStockCsv();
+        return;
+    }
+
+    if (type === "sales" || type === "refunds") {
+        const txType = type === "sales" ? "sale" : "refund";
+        const list = transactions.filter(tx =>
+            tx.type === txType &&
+            (!day || dateOnly(tx.datetime) === day)
+        );
+        if (!list.length) {
+            alert("No records for selected filter.");
+            return;
+        }
+        const rows = [["id","datetime","phone","notes","lines","total","profit"]];
+        list.forEach(tx => {
+            const lineText = tx.lines.map(l => `${l.code}:${l.qty}x${l.price}`).join("|");
+            rows.push([
+                tx.id,
+                tx.datetime,
+                tx.phone || "",
+                (tx.notes || "").replace(/,/g,";"),
+                lineText,
+                tx.total,
+                tx.profit
+            ]);
+        });
+        const csv = rows.map(r => r.join(",")).join("\n");
+        downloadTextFile(csv, txType + (day ? "_" + day : "") + ".csv");
+        return;
+    }
+
+    if (type === "telegram") {
+        if (!day) {
+            alert("Select a day.");
+            return;
+        }
+        const list = transactions.filter(tx => tx.type === "sale" && dateOnly(tx.datetime) === day);
+        if (!list.length) {
+            alert("No sales for this day.");
+            return;
+        }
+        let text = `Sales for ${day}\n`;
+        let dayTotal = 0;
+        list.forEach(tx => {
+            text += `\n[${timeOnly(tx.datetime)}] `;
+            const lines = tx.lines.map(l =>
+                `${l.code} (${l.size || "-"} ${l.color || "-"}) x${l.qty} @${l.price.toFixed(2)} = ${l.total.toFixed(2)}`
+            ).join(" | ");
+            text += lines;
+            text += ` | Total: ${tx.total.toFixed(2)}`;
+            dayTotal += tx.total;
+        });
+        text += `\n\nDay total: ${dayTotal.toFixed(2)}`;
+        out.value = text;
+    }
+}
+
+/* ================== SETTINGS / DEBUG / LOGS ================== */
+function renderSettings() {
+    document.getElementById("settings-low-threshold").value = settings.lowStockThreshold || 0;
+    document.getElementById("settings-margin").value = settings.defaultMarginPercent || 0;
+}
+function saveSettingsFromUI() {
+    const lowVal = document.getElementById("settings-low-threshold").value;
+    const marginVal = document.getElementById("settings-margin").value;
+    let low = parseInt(lowVal || "0", 10);
+    let margin = parseInt(marginVal || "0", 10);
+    if (isNaN(low) || low < 0) low = 0;
+    if (isNaN(margin) || margin < 0) margin = 0;
+    settings.lowStockThreshold = low;
+    settings.defaultMarginPercent = margin;
+    saveSettings();
+    addLog("Settings updated.");
+    renderLowStock();
+}
+function renderLogs() {
+    const box = document.getElementById("log-list");
+    if (!box) return;
+    box.innerHTML = "";
+    if (!logs.length) {
+        box.textContent = "No log entries.";
+        return;
+    }
+    logs.forEach(l => {
+        const div = document.createElement("div");
+        div.textContent = l;
+        box.appendChild(div);
+    });
+}
+function runDebug() {
+    const problems = [];
+    stock.forEach(it => {
+        if (it.quantity < 0) problems.push("Negative qty: " + it.code);
+        if (isNaN(it.costPrice) || isNaN(it.sellPrice)) problems.push("Bad price: " + it.code);
+    });
+    if (!problems.length) {
+        alert("No problems found.");
+    } else {
+        alert("Problems:\n" + problems.join("\n"));
+    }
+}
+
+/* ================== INIT ================== */
+function initEvents() {
+    document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            switchTab(btn.getAttribute("data-tab"));
+        });
+    });
+
+    document.getElementById("stock-form").addEventListener("submit", handleStockSubmit);
+    document.getElementById("stock-reset").addEventListener("click", resetStockForm);
+    document.getElementById("stock-search").addEventListener("input", renderStockTable);
+    document.getElementById("stock-csv-export").addEventListener("click", exportStockCsv);
+    document.getElementById("stock-csv-input").addEventListener("change", e => {
+        importStockCsv(e.target.files[0]);
+        e.target.value = "";
+    });
+
+    document.getElementById("sale-add-line").addEventListener("click", addSaleLine);
+    document.getElementById("sale-save").addEventListener("click", saveSale);
+    document.getElementById("sale-day-select").addEventListener("change", e => {
+        if (e.target.value) renderSaleHistoryForDay(e.target.value);
+    });
+    document.getElementById("sale-item-select").addEventListener("change", e => {
+        populateVariantSelect(document.getElementById("sale-variant-select"), e.target.value);
+        document.getElementById("sale-price").value = "";
+    });
+    document.getElementById("sale-variant-select").addEventListener("change", e => {
+        const it = findStockById(e.target.value);
+        if (it) {
+            document.getElementById("sale-price").value = it.sellPrice.toFixed(2);
+        }
+    });
+    document.getElementById("sale-search").addEventListener("input", e => {
+        const q = (e.target.value || "").toLowerCase();
+        const sel = document.getElementById("sale-item-select");
+        Array.from(sel.options).forEach(opt => {
+            if (!opt.value) return;
+            opt.hidden = !opt.textContent.toLowerCase().includes(q);
+        });
+    });
+
+    document.getElementById("refund-add-line").addEventListener("click", addRefundLine);
+    document.getElementById("refund-save").addEventListener("click", saveRefund);
+    document.getElementById("refund-day-select").addEventListener("change", e => {
+        if (e.target.value) renderRefundHistoryForDay(e.target.value);
+    });
+    document.getElementById("refund-item-select").addEventListener("change", e => {
+        populateVariantSelect(document.getElementById("refund-variant-select"), e.target.value);
+        document.getElementById("refund-price").value = "";
+    });
+    document.getElementById("refund-variant-select").addEventListener("change", e => {
+        const it = findStockById(e.target.value);
+        if (it) {
+            document.getElementById("refund-price").value = it.sellPrice.toFixed(2);
+        }
+    });
+    document.getElementById("refund-search").addEventListener("input", e => {
+        const q = (e.target.value || "").toLowerCase();
+        const sel = document.getElementById("refund-item-select");
+        Array.from(sel.options).forEach(opt => {
+            if (!opt.value) return;
+            opt.hidden = !opt.textContent.toLowerCase().includes(q);
+        });
+    });
+
+    document.getElementById("profit-calc").addEventListener("click", calculateProfitRange);
+    document.getElementById("export-run").addEventListener("click", exportData);
+    document.getElementById("settings-save").addEventListener("click", saveSettingsFromUI);
+    document.getElementById("debug-run").addEventListener("click", runDebug);
+
+    document.getElementById("language-select").addEventListener("change", e => {
+        settings.language = e.target.value;
+        saveSettings();
+        applyLanguage();
+    });
+    document.getElementById("theme-select").addEventListener("change", e => {
+        settings.theme = e.target.value;
+        saveSettings();
+        applyThemeAndFont();
+    });
+    document.getElementById("font-select").addEventListener("change", e => {
+        settings.fontSize = e.target.value;
+        saveSettings();
+        applyThemeAndFont();
+    });
+    document.getElementById("refresh-btn").addEventListener("click", () => {
+        location.reload();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadFromStorage();
+    applyLanguage();
+    applyThemeAndFont();
+    initEvents();
+    renderSettings();
+    renderStockTable();
+    renderLowStock();
+    refreshStockSelects();
+    refreshDaySelectors();
+    renderLogs();
+});
+</script>
+</body>
+</html>
